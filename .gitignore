@@ -7,3 +7,8 @@ __pycache__/
 .lattice/
 .DS_Store
 .env
+
+# Data files stay out of git: keep them on SharePoint or regenerate them.
+*.parquet
+*.pickle
+*.pkl
