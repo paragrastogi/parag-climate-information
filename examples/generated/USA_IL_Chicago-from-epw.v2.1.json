@@ -407,7 +407,7 @@
       ],
       "time_series": {
         "dry_bulb_temperature": {
-          "display_name": "Dry bulb temperature",
+          "display_name": "Dry-bulb temperature",
           "units": "K",
           "value_type": "INSTANTANEOUS",
           "value_time_intervals": "hourly",
@@ -9175,7 +9175,7 @@
           ]
         },
         "dew_point_temperature": {
-          "display_name": "Dew point temperature",
+          "display_name": "Dew-point temperature",
           "units": "K",
           "value_type": "INSTANTANEOUS",
           "value_time_intervals": "hourly",
@@ -35479,7 +35479,7 @@
           ]
         },
         "horizontal_infrared_sky_irradiance": {
-          "display_name": "Horizontal infrared sky irradiance",
+          "display_name": "Horizontal infrared sky irradiance (Instantaneous, Power)",
           "units": "W/m2",
           "value_type": "INSTANTANEOUS",
           "value_time_intervals": "hourly",
@@ -44247,7 +44247,7 @@
           ]
         },
         "global_horizontal_irradiation": {
-          "display_name": "Global horizontal irradiation",
+          "display_name": "Global solar horizontal irradiation (Sum, Energy)",
           "units": "J/m2",
           "value_type": "SUM",
           "value_time_intervals": "hourly",
@@ -53015,7 +53015,7 @@
           ]
         },
         "direct_normal_irradiation": {
-          "display_name": "Direct normal irradiation",
+          "display_name": "Direct normal solar irradiation (Sum, Energy)",
           "units": "J/m2",
           "value_type": "SUM",
           "value_time_intervals": "hourly",
@@ -61783,7 +61783,7 @@
           ]
         },
         "diffuse_horizontal_irradiation": {
-          "display_name": "Diffuse horizontal irradiation",
+          "display_name": "Diffuse horizontal irradiation (Sum, Energy)",
           "units": "J/m2",
           "value_type": "SUM",
           "value_time_intervals": "hourly",
@@ -158230,8 +158230,8 @@
             0.03
           ]
         },
-        "albedo": {
-          "display_name": "Albedo",
+        "albedo_ground": {
+          "display_name": "Albedo - Ground",
           "units": "-",
           "value_type": "INSTANTANEOUS",
           "value_time_intervals": "hourly",
@@ -166998,8 +166998,8 @@
             0.24
           ]
         },
-        "liquid_precipitation_depth": {
-          "display_name": "Liquid precipitation depth",
+        "liquid_precipitation": {
+          "display_name": "Liquid precipitation",
           "units": "m",
           "value_type": "SUM",
           "value_time_intervals": "hourly",

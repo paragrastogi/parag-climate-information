@@ -62,7 +62,7 @@ Precipitation onto `Statistics.maximum` / `minimum`. The two ASHRAE degree-day b
 | Coldest-month WS MCDB | `wind_speed_coincident_mean_dry_bulb_temperature` |
 | Average Daily Temperature (+ its std) | `daily_average_dry_bulb_temperature` |
 | HDD/CDD 10 degC & 18.3 degC | `heating_degree_days` / `cooling_degree_days` |
-| Average / Max / Min / Std Precipitation | `liquid_precipitation_depth` (mean/maximum/minimum/standard_deviation) |
+| Average / Max / Min / Std Precipitation | `liquid_precipitation` (mean/maximum/minimum/standard_deviation) |
 | Monthly Design DB (0.4/2/5/10) | `dry_bulb_temperature.monthly.percent_exceedance` |
 | Monthly Design WB (0.4/2/5/10) | `wet_bulb_temperature.monthly.percent_exceedance` |
 | Hottest/Coldest Month | `hottest_month` / `coldest_month` (convenience indices) |

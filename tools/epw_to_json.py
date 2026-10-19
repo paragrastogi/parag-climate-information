@@ -27,6 +27,7 @@ Usage::
 import json
 import math
 import os
+import re
 import sys
 import tempfile
 import zipfile
@@ -34,6 +35,7 @@ from collections import namedtuple
 from pathlib import Path
 from typing import Optional
 
+import yaml
 from dotenv import load_dotenv
 
 # Resolve the repo root explicitly from a .env file (REPO_ROOT) so the
@@ -48,6 +50,22 @@ from tools.climate_common import (
     build_summary_data,
     resolve_weather_inputs,
 )
+
+SCHEMA_PATH = Path(REPO_ROOT) / "schema" / "ClimateInformation.schema.yaml"
+
+
+def _time_series_display_names() -> dict[str, str]:
+    """display_name constraint of every ClimateTimeSeries member, read from the schema
+    so the emitted names track it rather than being re-derived from the variable name."""
+    with open(SCHEMA_PATH, encoding="utf-8") as f:
+        elements = yaml.safe_load(f)["ClimateTimeSeries"]["Data Elements"]
+    names = {}
+    for variable, element in elements.items():
+        for constraint in element.get("Constraints", []):
+            match = re.fullmatch(r'display_name="(.*)"', constraint)
+            if match:
+                names[variable] = match.group(1)
+    return names
 
 # --------------------------------------------------------------------------- #
 # EPW hourly data record: the 35 comma-separated fields, in order.
@@ -193,8 +211,8 @@ EPW_FIELDS = [
     ),
     _f(30, "snow_depth", "m", "INSTANTANEOUS", 999, _cm_to_m, _from_cm),
     _f(31),  # days since last snowfall
-    _f(32, "albedo", "-", "INSTANTANEOUS", 999, _IDENTITY, lambda x: round(x, 3)),
-    _f(33, "liquid_precipitation_depth", "m", "SUM", 999, _mm_to_m, _from_mm),
+    _f(32, "albedo_ground", "-", "INSTANTANEOUS", 999, _IDENTITY, lambda x: round(x, 3)),
+    _f(33, "liquid_precipitation", "m", "SUM", 999, _mm_to_m, _from_mm),
     _f(34),  # liquid precipitation quantity
 ]
 
@@ -476,12 +494,13 @@ def _build_time_series(data_lines: list[str], *, max_records: Optional[int]) -> 
         rows = rows[:max_records]
 
     # Collect per-variable value arrays.
+    display_names = _time_series_display_names()
     series: dict = {}
     for fld in EPW_FIELDS:
         if fld.variable is None:
             continue
         series[fld.variable] = {
-            "display_name": fld.variable.replace("_", " ").capitalize(),
+            "display_name": display_names[fld.variable],
             "units": fld.units,
             "value_type": fld.value_type,
             "value_time_intervals": "hourly",

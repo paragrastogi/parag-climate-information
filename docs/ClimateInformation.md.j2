@@ -140,7 +140,7 @@ graph TD
 | a variable -> `SummaryData` | a variable -> `TimeSeries` | one climate variable |
 | `annual` / `monthly[12]` -> `Statistics` | `values[]` aligned to a `TimeInterval` | the actual numbers (the leaf) |
 
-The two families share the same variable vocabulary where it makes sense (e.g. `dry_bulb_temperature`, `wind_speed`, `liquid_precipitation_depth` appear on both sides), so a document can hold an hourly record and the statistical summary derived from it under one `location`.
+The two families share the same variable vocabulary where it makes sense (e.g. `dry_bulb_temperature`, `wind_speed`, `liquid_precipitation` appear on both sides), so a document can hold an hourly record and the statistical summary derived from it under one `location`.
 
 ### Units: everything is SI base
 

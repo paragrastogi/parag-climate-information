@@ -451,10 +451,10 @@ ClimateSummaryData:
           value: '>=0'
       Description: Daily average dry-bulb temperature
       Notes: This is the sum of the daily minimum and maximum temperatures divided by 2. Generally used to estimate monthly degree days.
-    liquid_precipitation_depth:
+    liquid_precipitation:
       Type: Group(SummaryData)
       Constraints:
-      - display_name="Liquid precipitation depth"
+      - display_name="Liquid precipitation"
       - units="m"
       - (annual|monthly).statistic_type=SINGLE_VALUE
       Nested Attribute Overrides:

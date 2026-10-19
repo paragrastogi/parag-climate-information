@@ -10,11 +10,33 @@ Notable changes to the Climate Information data model
 The data model began as a time-series weather model: the `ClimateTimeSeries` variable set
 (temperature, humidity, the solar irradiance/irradiation family, wind, sky cover,
 precipitation, and a broad air-quality/pollutant list) describes an hourly or sub-hourly
-record for a station. That side is mature and is unchanged.
+record for a station. That side is mature; apart from the two renames under *Changed*
+below, it is unchanged.
 
 This version adds the summary / design-data side -- the `ClimateSummaryData` and
 `Statistics` groups -- so the same document can carry both the raw record and the
 statistical and design summaries derived from it.
+
+### Changed (breaking for v1 documents)
+
+Two variables are renamed relative to v1 (tags `v0.1.0` / `v0.1.1`). A v1 document that
+uses the old names fails validation against this schema; rename the keys to migrate.
+
+| v1 name | v2 name | Where |
+|---|---|---|
+| `albedo` | `albedo_ground` | `ClimateTimeSeries` |
+| `liquid_precipitation_depth` | `liquid_precipitation` | `ClimateTimeSeries` and `ClimateSummaryData` |
+
+- The display names change with them: "Albedo" -> "Albedo - Ground", and
+  "Liquid precipitation depth" -> "Liquid precipitation". Units and constraints are
+  unchanged (`albedo_ground` is unitless in [0, 1]; `liquid_precipitation` is in m).
+- `ClimateSummaryData` is new in v2, but its precipitation variable takes the new name too,
+  so the time-series and summary sides share one name for the same quantity.
+- `tools/epw_to_json.py` now writes EPW fields 32 and 33 under the new names, and the
+  generated and curated examples are updated to match.
+- The tooling now requires Python 3.11 or later. `atheneum_forge`, which `lattice`
+  pulls in, imports `tomllib`, which is not in the 3.10 standard library. CI no longer
+  tests 3.10.
 
 ### Added
 
@@ -35,6 +57,10 @@ statistical and design summaries derived from it.
 
 ### Fixed
 
+- `tools/epw_to_json.py` built each time series' `display_name` from its variable name
+  ("Dry bulb temperature"), so 7 of the 20 EPW-derived series disagreed with the
+  schema ("Dry-bulb temperature", "Albedo - Ground", the irradiation names). It now reads
+  the `display_name` constraint from the schema.
 - `tools/json_to_ddy.py` wrote every design day with `Daily Dry-Bulb Temperature Range`
   at `0.0`, a blank `Daily Wet-Bulb Temperature Range`, and an `ASHRAEClearSky` /
   `Clearness 0.00` stub with no optical depths. In EnergyPlus that is an isothermal

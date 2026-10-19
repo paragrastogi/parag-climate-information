@@ -71,7 +71,7 @@ authoritative column-range cross-check (the schema variable names are the
 | Average Daily Temperature + its Std (CM-DL) | `daily_average_dry_bulb_temperature` (annual + monthly mean/std) |
 | HDD/CDD 10 degC & 18.3 degC (DM-FL) | `heating_degree_days` / `cooling_degree_days` (two base temperatures) |
 | Average Wind Speed annual+monthly (FM-FY) | `wind_speed.{annual,monthly}.mean` |
-| Average / Max / Min / Std Precipitation (FZ-HY) | `liquid_precipitation_depth.{mean, maximum, minimum, standard_deviation}` |
+| Average / Max / Min / Std Precipitation (FZ-HY) | `liquid_precipitation.{mean, maximum, minimum, standard_deviation}` |
 | Monthly Design DB 0.4/2/5/10 + MCWB (HZ-LQ) | `dry_bulb_temperature.monthly` / `..._coincident_mean_wet_bulb_temperature.monthly` |
 | Monthly Design WB 0.4/2/5/10 + MCDB (LR-PI) | `wet_bulb_temperature.monthly` / `..._coincident_mean_dry_bulb_temperature.monthly` |
 | Mean Daily DB Range (PJ-PU) | `daily_dry_bulb_temperature_range` |
@@ -163,8 +163,8 @@ so those `ClimateSummaryData` variables are absent from an EPW-derived summary.
 | Precipitable water (28) | `precipitable_water` | mm -> m |
 | Aerosol optical depth (29) | `aerosol_optical_depth` | unitless |
 | Snow depth (30) | `snow_depth` | cm -> m |
-| Albedo (32) | `albedo` | unitless |
-| Liquid precipitation depth (33) | `liquid_precipitation_depth` (SUM) | mm -> m |
+| Albedo (32) | `albedo_ground` | unitless |
+| Liquid precipitation depth (33) | `liquid_precipitation` (SUM) | mm -> m |
 
 > EPW reports radiation as energy received over the hour (Wh/m2), so it maps to the
 > schema's *irradiation* (`J/m2`, `value_type=SUM`) variables rather than the

@@ -60,8 +60,8 @@ default; the DDY is the preferred design source).
 | Precipitable water (28) | `precipitable_water` | mm -> m |
 | Aerosol optical depth (29) | `aerosol_optical_depth` | unitless |
 | Snow depth (30) | `snow_depth` | cm -> m |
-| Albedo (32) | `albedo` | unitless |
-| Liquid precipitation depth (33) | `liquid_precipitation_depth` (SUM) | mm -> m |
+| Albedo (32) | `albedo_ground` | unitless |
+| Liquid precipitation depth (33) | `liquid_precipitation` (SUM) | mm -> m |
 
 EPW reports radiation as energy received over the hour (Wh/m2), so it maps to the model's
 irradiation (`J/m2`, `value_type = SUM`) variables rather than the instantaneous irradiance
