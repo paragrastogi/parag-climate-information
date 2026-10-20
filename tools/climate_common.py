@@ -30,10 +30,9 @@ from typing import Optional
 SCHEMA_AUTHOR = "IBPSA_BDE"
 SCHEMA_NAME = "CLIMATE_INFORMATION"
 AUTHOR = "IBPSA USA BDE Climate Working Group"
-COPYRIGHT = "Copyright (c) 2026 IBPSA USA."
-LICENSE = (
-    "Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)"
-)
+# The documents carry ASHRAE Handbook - Fundamentals 2025 design conditions, which this
+# project holds no license to; so no ``license`` is stated, and ASHRAE's rights are reserved.
+COPYRIGHT = "Copyright (c) 2025 ASHRAE. All rights reserved."
 
 # ``time_of_creation`` is a *constant*, not ``datetime.now()``: the generated examples
 # under examples/generated/ are committed to the repository, so a wall-clock timestamp
@@ -94,7 +93,6 @@ def build_metadata(description: str, source: str) -> dict:
         "version": DATA_VERSION,
         "source": source,
         "copyright": COPYRIGHT,
-        "license": LICENSE,
     }
 
 
