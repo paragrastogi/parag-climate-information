@@ -37,7 +37,9 @@ def task_generate_web_docs():
     """Generates Markdown Documentation"""
     return {
         "file_dep": [schema.schema.file_path for schema in climate_data_model.schema_info]
-        + [template.path for template in climate_data_model.doc_templates],
+        + [template.path for template in climate_data_model.doc_templates]
+        # about.md, config.yaml, and extra-pages/ aren't templates, but the site is built from them too.
+        + [path for path in Path("docs/web").rglob("*") if path.is_file()],
         "targets": [os.path.join(climate_data_model.web_docs_directory_path, "public")],
         "actions": [(climate_data_model.generate_web_documentation, [])],
     }
