@@ -1,13 +1,13 @@
 #!/bin/sh
-# Pre-commit hook: flag non-ASCII characters in staged Markdown files.
+# Pre-commit hook: flag non-ASCII characters in staged Markdown files and templates.
 #
 # Enable it once per clone with:
 #     git config core.hooksPath .githooks
 #
 # Bypass for a single commit (not recommended) with `git commit --no-verify`.
 
-# Staged, added/copied/modified *.md files (NUL-safe).
-files=$(git diff --cached --name-only --diff-filter=ACM -z -- '*.md' | tr '\0' '\n')
+# Staged, added/copied/modified *.md and *.md.j2 files (NUL-safe).
+files=$(git diff --cached --name-only --diff-filter=ACM -z -- '*.md' '*.md.j2' | tr '\0' '\n')
 [ -z "$files" ] && exit 0
 
 # Prefer python3, fall back to python.

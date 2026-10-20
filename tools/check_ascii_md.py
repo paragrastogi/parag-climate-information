@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Flag non-ASCII characters in Markdown files.
+"""Flag non-ASCII characters in Markdown files and Markdown templates (*.md.j2).
 
 Keeps the repo's `.md` consistent with the schema's ASCII conventions (e.g. `W/m2`,
 `J/kg`, `^` for exponents) and keeps prose greppable/typeable. Used by the
@@ -20,12 +20,15 @@ from pathlib import Path
 # Directories never worth scanning even if a stray .md lands in them.
 _SKIP_PARTS = {".git", ".venv", "node_modules", "site-packages"}
 
+# Jinja templates (*.md.j2) render to Markdown, so their prose is held to the same rule.
+_MARKDOWN_PATTERNS = ("*.md", "*.md.j2")
+
 
 def _tracked_markdown() -> list[str]:
-    """Every *.md tracked by git; falls back to a filesystem walk outside a repo."""
+    """Every Markdown file or template tracked by git; falls back to a filesystem walk outside a repo."""
     try:
         out = subprocess.run(
-            ["git", "ls-files", "*.md", "**/*.md"],
+            ["git", "ls-files", *_MARKDOWN_PATTERNS],
             capture_output=True,
             text=True,
             check=True,
@@ -37,7 +40,8 @@ def _tracked_markdown() -> list[str]:
         pass
     return sorted(
         str(p)
-        for p in Path(".").rglob("*.md")
+        for pattern in _MARKDOWN_PATTERNS
+        for p in Path(".").rglob(pattern)
         if not _SKIP_PARTS.intersection(p.parts)
     )
 
