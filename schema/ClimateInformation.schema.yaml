@@ -451,10 +451,10 @@ ClimateSummaryData:
           value: '>=0'
       Description: Daily average dry-bulb temperature
       Notes: This is the sum of the daily minimum and maximum temperatures divided by 2. Generally used to estimate monthly degree days.
-    liquid_precipitation:
+    liquid_precipitation_depth:
       Type: Group(SummaryData)
       Constraints:
-      - display_name="Liquid precipitation"
+      - display_name="Liquid precipitation depth"
       - units="m"
       - (annual|monthly).statistic_type=SINGLE_VALUE
       Nested Attribute Overrides:
@@ -1123,9 +1123,9 @@ ClimateTimeSeries:
       Type: "Group(TimeSeries)"
       Description: Snow depth
       Notes: Current observed depth of snow on the ground.
-    albedo_ground:
+    ground_albedo:
       Constraints:
-      - display_name="Albedo - Ground"
+      - display_name="Ground albedo"
       - units="-"
       - value_type=INSTANTANEOUS
       Nested Attribute Overrides:
@@ -1136,10 +1136,10 @@ ClimateTimeSeries:
           path: values
           value: '>=0, <=1'
       Type: "Group(TimeSeries)"
-      Description: Albedo
-    liquid_precipitation:
+      Description: Ground albedo
+    liquid_precipitation_depth:
       Constraints:
-      - display_name="Liquid precipitation"
+      - display_name="Liquid precipitation depth"
       - units="m"
       - value_type=SUM
       Nested Attribute Overrides:

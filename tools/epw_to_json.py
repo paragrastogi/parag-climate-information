@@ -211,8 +211,8 @@ EPW_FIELDS = [
     ),
     _f(30, "snow_depth", "m", "INSTANTANEOUS", 999, _cm_to_m, _from_cm),
     _f(31),  # days since last snowfall
-    _f(32, "albedo_ground", "-", "INSTANTANEOUS", 999, _IDENTITY, lambda x: round(x, 3)),
-    _f(33, "liquid_precipitation", "m", "SUM", 999, _mm_to_m, _from_mm),
+    _f(32, "ground_albedo", "-", "INSTANTANEOUS", 999, _IDENTITY, lambda x: round(x, 3)),
+    _f(33, "liquid_precipitation_depth", "m", "SUM", 999, _mm_to_m, _from_mm),
     _f(34),  # liquid precipitation quantity
 ]
 

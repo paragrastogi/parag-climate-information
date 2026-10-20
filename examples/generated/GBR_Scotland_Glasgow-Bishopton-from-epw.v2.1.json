@@ -158230,8 +158230,8 @@
             0.0
           ]
         },
-        "albedo_ground": {
-          "display_name": "Albedo - Ground",
+        "ground_albedo": {
+          "display_name": "Ground albedo",
           "units": "-",
           "value_type": "INSTANTANEOUS",
           "value_time_intervals": "hourly",
@@ -166998,8 +166998,8 @@
             0.13
           ]
         },
-        "liquid_precipitation": {
-          "display_name": "Liquid precipitation",
+        "liquid_precipitation_depth": {
+          "display_name": "Liquid precipitation depth",
           "units": "m",
           "value_type": "SUM",
           "value_time_intervals": "hourly",

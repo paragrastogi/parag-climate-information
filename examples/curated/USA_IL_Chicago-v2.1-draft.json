@@ -927,8 +927,8 @@
             }
           ]
         },
-        "liquid_precipitation": {
-          "display_name": "Liquid precipitation",
+        "liquid_precipitation_depth": {
+          "display_name": "Liquid precipitation depth",
           "units": "m",
           "source_data_period": "Handbook 2025 period of record",
           "source_data_type": "MEASURED",
