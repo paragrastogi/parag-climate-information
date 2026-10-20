@@ -4,51 +4,7 @@ doit task/build automation
 
 import os
 
-import yaml
 from lattice import Lattice
-from lattice.docs.mkdocs_web import MkDocsWeb
-
-
-# Lattice hard-codes the mkdocs `markdown_extensions` list in MkDocsWeb.make_config()
-# and leaves mermaid out, so the ```mermaid fences in docs/ClimateInformation.md.j2 ship
-# as literal <pre><code class="language-mermaid"> blocks -- the diagram source as text.
-# mkdocs-material renders mermaid only when pymdownx.superfences declares it as a custom
-# fence, so append that declaration here. It has to be patched onto make_config rather
-# than edited into the generated mkdocs.yml: lattice writes the config and shells out to
-# `mkdocs build` inside the same call, leaving no point in between to touch the file.
-
-
-class _PythonName(str):
-    """A string that serialises as the `!!python/name:<value>` tag mkdocs expects."""
-
-
-yaml.add_representer(
-    _PythonName,
-    lambda dumper, data: dumper.represent_scalar(f"tag:yaml.org,2002:python/name:{data}", ""),
-)
-
-_make_config_without_mermaid = MkDocsWeb.make_config
-
-
-def _make_config_with_mermaid(self):
-    config = _make_config_without_mermaid(self)
-    config["markdown_extensions"].append(
-        {
-            "pymdownx.superfences": {
-                "custom_fences": [
-                    {
-                        "name": "mermaid",
-                        "class": "mermaid",
-                        "format": _PythonName("pymdownx.superfences.fence_code_format"),
-                    }
-                ]
-            }
-        }
-    )
-    return config
-
-
-MkDocsWeb.make_config = _make_config_with_mermaid
 
 
 # Lattice's default build_validation=True runs validate_example_files() eagerly at
