@@ -1,10 +1,10 @@
-This document provides data model specifications for climate data. It was developed through a stakeholder consensus process by the IBPSA-USA Building Data Exchange Committee. It is based on the standard framework and vocabulary provided in the ANSI/ASHRAE/IBPSA Standard 232.
+This document specifies a data model for exchanging climate data for building performance simulation, design, and operation. It was developed through a stakeholder consensus process by the IBPSA-USA Building Data Exchange Committee and is based on the framework and vocabulary of ANSI/ASHRAE/IBPSA Standard 232. Version 2 is intended to be cited as an informative reference in ASHRAE Standard 169.
 
 Some notes about this version and its expected evolution:
 
 - The committee chose not to define an authoritative minimum viable data model, thus allowing users of the data model (data providers and consumers) to select the relevant variables and time periods according to their applications.
-- The data elements are intended to reflect the common use cases of building thermal and daylight modeling. Other use cases may require a different set of data elements for their purposes.
-- Currently the data model only covers metadata fields, location, and time series variables with regular and irregular time intervals. Future versions are expected to include structures for statistically-derived design conditions.
+- The data elements are intended to reflect the common use cases of building thermal and daylight modeling. Other use cases may require a different set of data elements for their purposes, and readers are invited to propose variables of interest that are not included in this model.
+- The data model covers metadata, location, time series variables with regular and irregular time intervals, and statistical summaries of climate variables, including design conditions.
 - This document does not separately consider how the data model should be serialized or the file formats that should be used for publication.
 
 ## Open Questions
@@ -16,7 +16,7 @@ The following questions and decisions from the committee's consensus process rem
 1. Which products, beyond the schema itself, are needed to make it usable (helpers, example datasets such as the ASHRAE design data)?
 1. Should the model support historical trends? The committee felt it was not essential (ref: the ASHRAE design conditions table).
 1. Should the model support design days, or daily (365-value) series? The committee saw no need for daily values.
-1. Derived variables and extensibility. The working principle is that variables derivable from measured variables by a deterministic calculation stay out of the base model, with guidance for providers to pre-compute them into use-case "flavours" (e.g. an ASHRAE-flavour output adding enthalpy, ranges, and return periods). Open: should derived variables be (a) defined-but-optional in the base model, (b) supported only via documented extensibility/custom fields, or (c) split into a separate auxiliary model? The current exclusion list is in the format-mapping notes under `extra_docs/`. Return periods were decided out (19 Dec 2025); if reintroduced, the notes should reference the calculation method (a mixture of the empirical distribution and a nominal Gumbel distribution), and we should consider naming them by the corresponding probability.
+1. Derived variables and extensibility. The working principle is that variables derivable from measured variables by a deterministic calculation stay out of the base model, with guidance for providers to pre-compute them into use-case "flavours" (e.g. an ASHRAE-flavour output adding enthalpy, ranges, and return periods). Open: should derived variables be (a) defined-but-optional in the base model, (b) supported only via documented extensibility/custom fields, or (c) split into a separate auxiliary model? The current exclusion list is in the format-mapping notes under `extra_docs/`. Return periods were decided out; if reintroduced, the notes should reference the calculation method (a mixture of the empirical distribution and a nominal Gumbel distribution), and we should consider naming them by the corresponding probability.
 1. Confidence intervals: how should they be expressed per quantity -- as an arbitrary range, and as a confidence level, a confidence interval, or "n-sigma"?
 
 ## Working Group
