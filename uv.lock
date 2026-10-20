@@ -259,7 +259,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "lattice", git = "https://github.com/bigladder/lattice.git?branch=nested-attribute-constraints" },
+    { name = "lattice", git = "https://github.com/bigladder/lattice.git?branch=main" },
     { name = "python-dotenv" },
 ]
 
@@ -384,7 +384,7 @@ wheels = [
 [[package]]
 name = "lattice"
 version = "0.0.0"
-source = { git = "https://github.com/bigladder/lattice.git?branch=nested-attribute-constraints#5571b8a209ed34f2eac89ebf5123966a5a342fe6" }
+source = { git = "https://github.com/bigladder/lattice.git?branch=main#82e505b209bdb344edaf85d09fad96edfcadc895" }
 dependencies = [
     { name = "atheneum-forge" },
     { name = "casefy" },
@@ -392,6 +392,7 @@ dependencies = [
     { name = "jinja2" },
     { name = "jsonschema" },
     { name = "markdown-grid-tables" },
+    { name = "mkdocs-autorefs" },
     { name = "mkdocs-material" },
     { name = "networkx" },
     { name = "pygit2" },
@@ -422,13 +423,10 @@ wheels = [
 
 [[package]]
 name = "markdown-grid-tables"
-version = "0.4.0"
-source = { registry = "https://pypi.org/simple" }
+version = "0.6.1.dev6+g28bfe9f62"
+source = { git = "https://github.com/bigladder/markdown-grid-tables.git?branch=fix-def-list-and-preprocessing#28bfe9f6231ee8e80f22ce10203c3e5d99a77102" }
 dependencies = [
     { name = "markdown" },
-]
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/13/bd9128c8c304c072a6c66becbfeb0b379fd9e590a6b2e0a78a78d27c8704/markdown_grid_tables-0.4.0-py3-none-any.whl", hash = "sha256:6f3422b854e8dbfe25a4e35e337df32f1bd901c420d4d6f132886334709939f5", size = 20960, upload-time = "2025-01-05T01:20:07.058Z" },
 ]
 
 [[package]]
@@ -574,6 +572,20 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/bc/c6/bbd4f061bd16b378247f12953ffcb04786a618ce5e904b8c5a01a0309061/mkdocs-1.6.1.tar.gz", hash = "sha256:7b432f01d928c084353ab39c57282f29f92136665bdd6abf7c1ec8d822ef86f2", size = 3889159, upload-time = "2024-08-30T12:24:06.899Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/22/5b/dbc6a8cddc9cfa9c4971d59fb12bb8d42e161b7e7f8cc89e49137c5b279c/mkdocs-1.6.1-py3-none-any.whl", hash = "sha256:db91759624d1647f3f34aa0c3f327dd2601beae39a366d6e064c03468d35c20e", size = 3864451, upload-time = "2024-08-30T12:24:05.054Z" },
+]
+
+[[package]]
+name = "mkdocs-autorefs"
+version = "1.4.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "markdown" },
+    { name = "markupsafe" },
+    { name = "mkdocs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/52/c0/f641843de3f612a6b48253f39244165acff36657a91cc903633d456ae1ac/mkdocs_autorefs-1.4.4.tar.gz", hash = "sha256:d54a284f27a7346b9c38f1f852177940c222da508e66edc816a0fa55fc6da197", size = 56588, upload-time = "2026-02-10T15:23:55.105Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/28/de/a3e710469772c6a89595fc52816da05c1e164b4c866a89e3cb82fb1b67c5/mkdocs_autorefs-1.4.4-py3-none-any.whl", hash = "sha256:834ef5408d827071ad1bc69e0f39704fa34c7fc05bc8e1c72b227dfdc5c76089", size = 25530, upload-time = "2026-02-10T15:23:53.817Z" },
 ]
 
 [[package]]
