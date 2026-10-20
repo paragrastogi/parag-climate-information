@@ -6,3 +6,4 @@ specifications:
 colors:
   primary: "#e0e0e0"
   accent: "#d91c2e"
+print_page: true
