@@ -62,14 +62,6 @@ climate_data_model.generate_meta_schemas()
 climate_data_model.validate_schemas()
 climate_data_model.generate_json_schemas()
 
-# USA_IL_Chicago-v1.json predates the current schema entirely (2021, a different
-# schema identity than any version this schema.yaml has ever declared) and needs a
-# real migration, not a mechanical field-rename -- deferred, tracked as
-# IBPSA-USA/climate-information#8 rather than silently deleting or moving a file
-# that may still be a useful historical reference.
-_LEGACY_EXAMPLES = {climate_data_model.root_directory / "examples/curated/USA_IL_Chicago-v1.json"}
-climate_data_model.examples = [p for p in climate_data_model.examples if p not in _LEGACY_EXAMPLES]
-
 
 def task_validate_example_files():
     """Validates the example files against the JSON schema (and other validation steps)"""
