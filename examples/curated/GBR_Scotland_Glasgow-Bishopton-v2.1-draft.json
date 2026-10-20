@@ -9,7 +9,7 @@
     "time_of_creation": "2026-06-12T10:00Z",
     "version": "2.0.0",
     "source": "[THIS IS A SCHEMA EXAMPLE. Values are taken from the ASHRAE Handbook - Fundamentals 2025 design-conditions spreadsheet and converted to SI base units; it is provided to illustrate the data model, not as an authoritative data source.] WMO#03134; ASHRAE Handbook - Fundamentals 2025.",
-    "copyright": "Copyright (c) 2026 IBPSA USA. All rights reserved.",
+    "copyright": "Copyright (c) 2026 IBPSA USA.",
     "license": "Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)"
   },
   "location": {

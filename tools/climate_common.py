@@ -30,7 +30,7 @@ from typing import Optional
 SCHEMA_AUTHOR = "IBPSA_BDE"
 SCHEMA_NAME = "CLIMATE_INFORMATION"
 AUTHOR = "IBPSA USA BDE Climate Working Group"
-COPYRIGHT = "Copyright (c) 2026 IBPSA USA. All rights reserved."
+COPYRIGHT = "Copyright (c) 2026 IBPSA USA."
 LICENSE = (
     "Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)"
 )
