@@ -4,5 +4,5 @@ description: "A standardized modern data model for characterizing climate data"
 specifications:
   - "ClimateInformation"
 colors:
-  primary: grey
-  accent: red
+  primary: "#e0e0e0"
+  accent: "#d91c2e"
