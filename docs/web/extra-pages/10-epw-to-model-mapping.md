@@ -1,3 +1,7 @@
+---
+title: EPW mapping
+---
+
 # EnergyPlus Weather (EPW / TMY) -> Climate Information data model
 
 A companion to the Climate Information specification (`ClimateInformation`) and the worked
@@ -8,10 +12,10 @@ mapping in both directions, and the round-trip is checked by the test suite.
 
 This is the section-level map. Companions:
 
-- `extra_docs/epw_data_dictionary.md` -- the EPW format itself, field by field.
-- `extra_docs/ashrae_dd_gap_analysis.md` (Part 2) -- the field-level cross-check of the
+- [EPW data dictionary](40-epw-data-dictionary.md) -- the EPW format itself, field by field.
+- [Gap analysis](30-ashrae-design-day-gap-analysis.md) (Part 2) -- the field-level cross-check of the
   converter against the EnergyPlus data dictionary, and the converter validation record.
-- `extra_docs/ashrae_to_ddy_and_model_mapping.md` -- the ASHRAE design conditions, which
+- [ASHRAE and DDY mapping](20-ashrae-to-ddy-and-model-mapping.md) -- the ASHRAE design conditions, which
   are what the EPW `DESIGN CONDITIONS` header carries.
 
 The EnergyPlus Weather format (`.epw`, and the closely related TMY/DDY files) is
@@ -35,7 +39,7 @@ https://climate.onebuilding.org/papers/EnergyPlus_Weather_File_Format.pdf.
 
 The EPW `DESIGN CONDITIONS` header is the ASHRAE spreadsheet columns P-CL laid end to end
 (`Heating` = P-AE, `Cooling` = AF-BK, `Extremes` = BL-CL). It maps to the annual design
-conditions exactly as set out in `extra_docs/ashrae_to_ddy_and_model_mapping.md`. It is the
+conditions exactly as set out in [ASHRAE and DDY mapping](20-ashrae-to-ddy-and-model-mapping.md). It is the
 only summary an EPW carries -- everything from spreadsheet column CM onward (degree days,
 monthly design tables, precipitation, solar) lives in the `.stat` file, not the EPW. The
 header is optional, so the converter treats it as opt-in (`--epw-header-design`, off by

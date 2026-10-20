@@ -1,3 +1,7 @@
+---
+title: ASHRAE and DDY mapping
+---
+
 # ASHRAE HOF design conditions -> DDY and the Climate Information data model
 
 A companion to the Climate Information specification (`ClimateInformation`) and the worked
@@ -10,9 +14,9 @@ The ASHRAE design-conditions spreadsheet (`HOF_2025_Climate_Design_Conditions_SI
 single `Stations` sheet, 588 columns) is the primary source for the summary variable list.
 This is the section-level map. Companions:
 
-- `extra_docs/ashrae_dd_gap_analysis.md` (Part 1) -- the column-by-column cross-check of
+- [Gap analysis](30-ashrae-design-day-gap-analysis.md) (Part 1) -- the column-by-column cross-check of
   all 588 columns, and the YAML/JSON variable parity check.
-- `extra_docs/epw_to_model_mapping.md` -- the EPW / TMY time-series format. An EPW's
+- [EPW mapping](10-epw-to-model-mapping.md) -- the EPW / TMY time-series format. An EPW's
   optional `DESIGN CONDITIONS` header is columns P-CL of this same table.
 
 The converters in `tools/` implement these mappings in both directions

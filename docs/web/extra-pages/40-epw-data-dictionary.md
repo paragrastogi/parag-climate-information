@@ -1,3 +1,7 @@
+---
+title: EPW data dictionary
+---
+
 # EnergyPlus Weather File (EPW) Data Dictionary
 
 > **Local reference copy.** Transcribed 2026-07-03 from the Big Ladder Software mirror of
@@ -7,7 +11,7 @@
 > Kept in-repo so the EPW <-> Climate Information converters (`tools/epw_to_json.py`,
 > `tools/json_to_epw.py`) can be validated against a stable snapshot of the format. The
 > field-by-field mapping onto the schema -- and which fields the converter carries -- is in
-> `extra_docs/ashrae_dd_gap_analysis.md` (Part 2). Numeric *missing* / *min* / *max* values below
+> [Gap analysis](30-ashrae-design-day-gap-analysis.md) (Part 2). Numeric *missing* / *min* / *max* values below
 > are reproduced exactly as published.
 >
 > **License:** Documentation copyright (c) 1996-2015 The Board of Trustees of the University

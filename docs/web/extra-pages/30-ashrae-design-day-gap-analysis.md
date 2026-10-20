@@ -1,3 +1,7 @@
+---
+title: Gap analysis
+---
+
 # Gap analysis -- ASHRAE HOF 2025 & EPW <-> Climate Information schema
 
 How the ASHRAE *Handbook of Fundamentals 2025* design-conditions spreadsheet
@@ -18,8 +22,8 @@ dictionary (Part 2).
 
 > Companions: the `ClimateInformation` specification explains the data model, the unit
 > conventions, and the deliberate exclusions.
-> `extra_docs/ashrae_to_ddy_and_model_mapping.md` and
-> `extra_docs/epw_to_model_mapping.md` are the section-level maps for the two formats.
+> [ASHRAE and DDY mapping](20-ashrae-to-ddy-and-model-mapping.md) and
+> [EPW mapping](10-epw-to-model-mapping.md) are the section-level maps for the two formats.
 > This document is the column-level cross-check behind them.
 
 ---
@@ -102,7 +106,7 @@ So the two are aligned: the schema defines exactly the variables the example use
 > `tools/epw_to_json.py`) was cross-checked field-by-field against the EnergyPlus EPW
 > data dictionary
 > ([bigladdersoftware EPW data dictionary](https://bigladdersoftware.com/epx/docs/8-3/auxiliary-programs/energyplus-weather-file-epw-data-dictionary.html);
-> a local copy is kept at `extra_docs/epw_data_dictionary.md`).
+> a local copy is kept at [EPW data dictionary](40-epw-data-dictionary.md)).
 > All 21 mapped hourly fields agree with the dictionary on **position, unit, and
 > missing-value sentinel** (section 2.3); the 9 unmapped fields are exactly the ones with no
 > schema home (section 2.3 / section 8.1) and are re-emitted with their correct sentinels. A generated
