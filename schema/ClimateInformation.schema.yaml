@@ -1441,11 +1441,11 @@ SummaryData:
   Data Elements:
     display_name:
       Type: String
-      Description: ""
+      Description: "Human-readable name of this summary data element (fixed for each named element in ClimateSummaryData)"
       Required: true
     units:
       Type: String
-      Description: ""
+      Description: "Units of the statistics in this summary data element (fixed for each named element in ClimateSummaryData)"
       Required: true
     source_data_period:
       Description: "Reference to the source data period defined in the parent summary data set"
@@ -1584,49 +1584,49 @@ TimeSeries:
   Data Elements:
     display_name:
       Type: String
-      Description: ""
+      Description: "Human-readable name of this time series element (fixed for each named element in ClimateTimeSeries)"
       Required: true
     units:
       Type: String
-      Description: ""
+      Description: "Units of the values and uncertainty in this time series element (fixed for each named element in ClimateTimeSeries)"
       Required: true
     value_type:
       Type: Enumeration(TimeSeriesType)
-      Description: ""
+      Description: "How each value relates to its timestamp: an instantaneous reading; the average or sum over the preceding interval; or the cumulative sum from the starting timestamp up to and including the preceding interval"
       Required: true
     value_time_intervals:
-      Description: ""
+      Description: "Reference to the TimeInterval, defined in the parent time series data set, that gives the timestamp of each value"
       Type: "Reference(Group(TimeInterval))"
       Required: true
     values:
       Type: "Array(Numeric)"
       Constraints: "[1..]"
-      Description: ""
+      Description: "Time series values, one for each timestamp of the TimeInterval referenced by value_time_intervals"
       Required: true
     source_time_intervals:
-      Description: ""
+      Description: "Reference to the TimeInterval, defined in the parent time series data set, that gives the timestamp of each source entry; if omitted, the source entries use the timestamps of value_time_intervals"
       Type: "Reference(Group(TimeInterval))"
       Required: false
     source:
       Type: "Array(Enumeration(TimeSeriesDataSourceType))"
       Constraints: "[1..]"
-      Description: ""
+      Description: "How each value was obtained, one entry for each timestamp of the TimeInterval referenced by source_time_intervals"
       Required: false
     uncertainty_time_intervals:
-      Description: ""
+      Description: "Reference to the TimeInterval, defined in the parent time series data set, that gives the timestamp of each uncertainty entry; if omitted, the uncertainty entries use the timestamps of value_time_intervals"
       Type: "Reference(Group(TimeInterval))"
       Required: false
     uncertainty:
       Type: "Array(Numeric)"
       Constraints: "[1..]"
-      Description: ""
+      Description: "Uncertainty of the values, one entry for each timestamp of the TimeInterval referenced by uncertainty_time_intervals"
       Required: false
     notes_time_intervals:
-      Description: ""
+      Description: "Reference to the TimeInterval, defined in the parent time series data set, that gives the timestamp of each note; if omitted, the notes use the timestamps of value_time_intervals"
       Type: "Reference(Group(TimeInterval))"
       Required: false
     notes:
       Type: "Array(String)"
       Constraints: "[1..]"
-      Description: ""
+      Description: "Notes about the values, one entry for each timestamp of the TimeInterval referenced by notes_time_intervals"
       Required: false
