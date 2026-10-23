@@ -88,7 +88,13 @@ round-tripped EPW, round-tripped DDY) reports the ASHRAE values.
 2. **`test_null_roundtrip_epw_json`**: EPW has no blank or missing value (it uses numeric
    sentinels such as 99.9, 999, 9999); the model supports `null`. A sentinel becomes `null`
    on import and the same sentinel returns on export.
-3. **`test_roundtrip_json_epw` / `test_roundtrip_json_ddy`**: the reverse converters are
+3. **`test_null_survives_json_file_roundtrip`**: a converted document with planted
+   missing values is written with `allow_nan=False` and read back with a parser that
+   rejects `NaN`. The `null` values come back in the same places. Python's `json` would
+   otherwise write a stray `float("nan")` as the bare token `NaN`, which is not valid
+   JSON. **`test_examples_are_strict_json`** applies the same strict parse to every
+   example file.
+4. **`test_roundtrip_json_epw` / `test_roundtrip_json_ddy`**: the reverse converters are
    faithful: EPW -> JSON -> EPW -> JSON preserves the summary and every hourly value, and
    DDY -> JSON -> DDY -> JSON preserves the design conditions and the location.
 

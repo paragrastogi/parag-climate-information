@@ -11,8 +11,9 @@ All self-contained -- only local paths in this repo are used. The two headline c
 2. ``test_null_roundtrip_epw_json`` -- EPW has no blank/missing concept (it uses
    numeric sentinels like 99.9, 999, 9999); the v2.1 schema supports explicit
    ``null``. This checks that a sentinel becomes ``null`` on the way into JSON and the
-   same sentinel comes back on the way out, and that ``null`` survives a JSON
-   serialisation round-trip.
+   same sentinel comes back on the way out. ``test_null_survives_json_file_roundtrip``
+   then checks that those ``null`` values survive a strict JSON write/read cycle and
+   never turn into ``NaN``.
 
 The rest cover the reverse converters, the opt-in EPW design header, and the design-day
 daily ranges and solar model in both directions.
@@ -193,24 +194,91 @@ def test_null_roundtrip_epw_json():
                 )
 
     assert null_count == 6, f"expected 6 sentinel->null conversions, got {null_count}"
-
-    # null also has to survive plain JSON serialisation (the scenario in
-    # extra_examples/test_20251017.json and nan_handling_python.py).
-    fixture = REPO / "extra_examples" / "test_20251017.json"
-    if fixture.exists():
-        data = json.loads(fixture.read_text())
-        assert any(v is None for row in data for v in row), (
-            "fixture should contain nulls"
-        )
-        with tempfile.NamedTemporaryFile("w+", suffix=".json", delete=True) as fh:
-            json.dump(data, fh)
-            fh.flush()
-            fh.seek(0)
-            reloaded = json.load(fh)
-        assert reloaded == data, "null values changed across a JSON write/read cycle"
-        assert reloaded[1][1] is None and reloaded[2][3] is None
-
     print(f"test_null_roundtrip_epw_json OK ({null_count} sentinel<->null round-trips)")
+
+
+# (data row, EPW field index, sentinel, model variable) planted in a copy of the Chicago EPW
+PLANTED_SENTINELS = [
+    (1, 6, "99.9", "dry_bulb_temperature"),
+    (2, 8, "999", "relative_humidity"),
+    (3, 13, "9999", "global_horizontal_irradiation"),
+]
+
+
+def _strict_json_loads(text: str):
+    """``json.loads`` that rejects NaN/Infinity, which Python's json accepts by default."""
+
+    def reject(token):
+        raise ValueError(f"non-standard JSON constant {token!r}")
+
+    return json.loads(text, parse_constant=reject)
+
+
+def test_null_survives_json_file_roundtrip():
+    """Missing values written to a JSON file come back as null, never as NaN.
+
+    Python's json writes float("nan") as the bare token NaN, which is not valid JSON and
+    which other parsers reject; after a reload NaN != NaN also breaks equality checks.
+    Missing values must therefore be None in the document, and documents are written
+    with allow_nan=False so a stray NaN fails loudly instead of producing a bad file.
+    """
+    # Python's default behaviour, which is the hazard guarded against below.
+    assert json.dumps([float("nan")]) == "[NaN]"
+    try:
+        json.dumps([float("nan")], allow_nan=False)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("allow_nan=False should reject NaN")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        epw = extract_member(STATIONS["chicago"], ".epw", tmp)
+        lines = epw.read_text(encoding="utf-8").splitlines()
+        first_row = (
+            next(i for i, line in enumerate(lines) if line.startswith("DATA PERIODS"))
+            + 1
+        )
+        for row, index, sentinel, _ in PLANTED_SENTINELS:
+            fields = lines[first_row + row].split(",")
+            fields[index] = sentinel
+            lines[first_row + row] = ",".join(fields)
+        planted = Path(tmp) / "planted.epw"
+        planted.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        doc = epw_to_climate_information(planted, max_records=24)
+        series = doc["time_series_data_sets"][0]["time_series"]
+        nulls = {
+            (var, i)
+            for var, block in series.items()
+            for i, value in enumerate(block["values"])
+            if value is None
+        }
+        expected = {(var, row) for row, _, _, var in PLANTED_SENTINELS}
+        assert nulls == expected, (
+            f"nulls at {sorted(nulls)}, expected {sorted(expected)}"
+        )
+
+        out = Path(tmp) / "planted.json"
+        out.write_text(json.dumps(doc, allow_nan=False), encoding="utf-8")
+        reloaded = _strict_json_loads(out.read_text(encoding="utf-8"))
+
+    assert reloaded == doc, "document changed across a JSON write/read cycle"
+    print(
+        f"test_null_survives_json_file_roundtrip OK ({len(expected)} nulls "
+        "survive a strict JSON write/read)"
+    )
+
+
+def test_examples_are_strict_json():
+    """Every example file parses as standard JSON, with no NaN or Infinity tokens."""
+    paths = sorted(EXAMPLES.rglob("*.json"))
+    assert paths, "no example JSON files found"
+    for path in paths:
+        try:
+            _strict_json_loads(path.read_text(encoding="utf-8"))
+        except ValueError as exc:
+            raise AssertionError(f"{path.relative_to(REPO)}: {exc}") from exc
+    print(f"test_examples_are_strict_json OK ({len(paths)} files)")
 
 
 # --------------------------------------------------------------------------- #
@@ -399,7 +467,9 @@ def test_ddy_monthly_values_read():
             monthly = ddy_monthly_values(text)
 
             missing = expected_variables - set(monthly)
-            assert not missing, f"[{station}] reader found nothing for: {sorted(missing)}"
+            assert not missing, (
+                f"[{station}] reader found nothing for: {sorted(missing)}"
+            )
 
             checked = 0
             for day, fields in sorted(days.items()):
@@ -428,7 +498,9 @@ def test_ddy_monthly_values_read():
             # Each of the 12 cooling days states a dry-bulb range and both optical
             # depths, so a healthy read is comfortably above this floor.
             assert checked >= 30, f"[{station}] only {checked} values cross-checked"
-            print(f"  [{station}] {checked} design-day values match the reader's output")
+            print(
+                f"  [{station}] {checked} design-day values match the reader's output"
+            )
 
     print("test_ddy_monthly_values_read OK (ranges + optical depths recovered)")
 
