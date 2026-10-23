@@ -1,17 +1,17 @@
-# EPW / DDY <-> Climate Information v2.1 helpers
+# EPW / DDY <-> Climate Information v2.0 helpers
 
 Small, self-contained Python helpers that translate EnergyPlus weather files to and from
-Climate Information v2.1 JSON (the data model defined in
+Climate Information v2.0 JSON (the data model defined in
 `schema/ClimateInformation.schema.yaml`), plus the tests that check them. Everything
 uses local paths inside this repository.
 
 | File | What it does |
 |---|---|
-| `climate_common.py` | Shared unit conversions and the design-conditions mapping, in both directions: `build_summary_data()` (`{ASHRAE column -> value}` -> schema `ClimateSummaryData`, base SI) and its inverse `summary_data_to_ashrae_cols()`. |
-| `epw_to_json.py` | **EPW -> v2.1 JSON.** `LOCATION` -> `location`, 8760 hourly records -> `time_series_data_sets`. EPW missing-value sentinels become `null`. The `DESIGN CONDITIONS` header -> `summary_data_sets` only with `--epw-header-design` (off by default -- the DDY is the preferred design source). |
-| `ddy_to_json.py` | **DDY -> v2.1 JSON.** `Site:Location` -> `location`, `SizingPeriod:DesignDay` objects + header comments -> `summary_data_sets`. |
-| `json_to_epw.py` | **v2.1 JSON -> EPW** (reverse of `epw_to_json.py`). `null` becomes the EPW sentinel again. |
-| `json_to_ddy.py` | **v2.1 JSON -> DDY** (reverse of `ddy_to_json.py`). |
+| `climate_common.py` | Shared unit conversions and the design-conditions mapping, in both directions: `build_summary_data()` (`{ASHRAE column -> value}` -> model `ClimateSummaryData`, base SI) and its inverse `summary_data_to_ashrae_cols()`. |
+| `epw_to_json.py` | **EPW -> v2.0 JSON.** `LOCATION` -> `location`, 8760 hourly records -> `time_series_data_sets`. EPW missing-value sentinels become `null`. The `DESIGN CONDITIONS` header -> `summary_data_sets` only with `--epw-header-design` (off by default; the DDY is the preferred design source). |
+| `ddy_to_json.py` | **DDY -> v2.0 JSON.** `Site:Location` -> `location`, `SizingPeriod:DesignDay` objects + header comments -> `summary_data_sets`. |
+| `json_to_epw.py` | **v2.0 JSON -> EPW** (reverse of `epw_to_json.py`). `null` becomes the EPW sentinel again. |
+| `json_to_ddy.py` | **v2.0 JSON -> DDY** (reverse of `ddy_to_json.py`). |
 | `extract_ashrae_reference.py` | One-off: pulls the two test rows out of the (off-repo, ~45 MB) ASHRAE HOF 2025 spreadsheet into the fixture below. |
 | `testdata/ashrae_hof2025_design_extract.json` | Committed fixture: Chicago + Glasgow rows, columns A-CL, in the spreadsheet's units. |
 | `test_climate_helpers.py` | The tests (see below). |
@@ -21,7 +21,7 @@ uses local paths inside this repository.
 
 This repository uses [uv](https://docs.astral.sh/uv/). `uv run` resolves the
 environment from `pyproject.toml`/`uv.lock` automatically (run `uv sync` once to
-materialise the `.venv`), so no manual activation is needed.
+materialize the `.venv`), so no manual activation is needed.
 
 The tools locate the repo (to import the `tools` package) by reading
 `REPO_ROOT` from a `.env` file via `python-dotenv`, so they can be run from any
@@ -75,21 +75,20 @@ design-conditions only (~10 KB).
 
 `generate_examples.py` applies canonical overrides on import. For Chicago O'Hare it
 uses **WMO `725300`** and **elevation `205 m`** (the ASHRAE row), overriding the
-`201.8 m` the onebuilding EPW/DDY carry, so every generated artifact for Chicago -- JSON,
-round-tripped EPW, round-tripped DDY -- reports the ASHRAE values.
+`201.8 m` the onebuilding EPW/DDY carry, so every generated artifact for Chicago (JSON,
+round-tripped EPW, round-tripped DDY) reports the ASHRAE values.
 
 ## The tests
 
-1. **`test_ddy_matches_ashrae`** -- the design conditions parsed out of each DDY file are
+1. **`test_ddy_matches_ashrae`**: the design conditions parsed out of each DDY file are
    *identical* (to the published 0.1-unit precision) to the matching row of the ASHRAE
    HOF 2025 spreadsheet. 47 design columns per station are compared against the committed
    extract. The EPW `DESIGN CONDITIONS` line, the DDY design days and the spreadsheet all
    map onto the same ASHRAE column letters, so the comparison is direct.
-2. **`test_null_roundtrip_epw_json`** -- EPW has no blank/missing value (numeric sentinels
-   99.9, 999, 9999 ...); the schema supports `null`. A sentinel becomes `null` on import and
-   the same sentinel returns on export, and `null` survives a JSON serialisation
-   round-trip (the `extra_examples/test_20251017.json` scenario).
-3. **`test_roundtrip_json_epw` / `test_roundtrip_json_ddy`** -- the reverse converters are
+2. **`test_null_roundtrip_epw_json`**: EPW has no blank or missing value (it uses numeric
+   sentinels such as 99.9, 999, 9999); the model supports `null`. A sentinel becomes `null`
+   on import and the same sentinel returns on export.
+3. **`test_roundtrip_json_epw` / `test_roundtrip_json_ddy`**: the reverse converters are
    faithful: EPW -> JSON -> EPW -> JSON preserves the summary and every hourly value, and
    DDY -> JSON -> DDY -> JSON preserves the design conditions and the location.
 
@@ -107,11 +106,11 @@ round-tripped EPW, round-tripped DDY -- reports the ASHRAE values.
   extreme-annual values (BQ/BR/CC/CD).
 - **Reverse-converter fidelity.** Quantities the model deliberately drops (humidity
   ratio, wind shelter factor, n-year return periods) come back **blank** in a generated
-  EPW `DESIGN CONDITIONS` line; EPW fields the schema has no home for (extraterrestrial
+  EPW `DESIGN CONDITIONS` line; EPW fields the model has no home for (extraterrestrial
   radiation, zenith luminance, visibility, ceiling, present weather, ...) come back as EPW
   missing-value sentinels; the other EPW header blocks (TYPICAL/EXTREME PERIODS, GROUND
   TEMPERATURES) are emitted empty; and the calendar is a single non-leap year. None of
-  these affect the modeled data, which round-trips exactly.
-- **Schema validation.** The schema YAML does not currently compile under `lattice` (a
-  pre-existing `ashrae_grade` constraint-syntax issue), so these helpers target the
-  documented v2.1 structure rather than a generated JSON Schema.
+  these affect the data the model carries, which round-trips exactly.
+- **Schema validation.** The schema YAML compiles under the `lattice` build pinned in
+  `pyproject.toml`. `uv run doit` generates the JSON Schema from it and validates the
+  examples against that schema.

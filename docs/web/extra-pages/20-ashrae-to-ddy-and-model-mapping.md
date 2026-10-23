@@ -5,7 +5,7 @@ title: ASHRAE and DDY mapping
 # ASHRAE HOF design conditions -> DDY and the Climate Information data model
 
 A companion to the Climate Information specification (`ClimateInformation`) and the worked
-examples in `examples/`. The specification describes the data model itself -- its
+examples in `examples/`. The specification describes the data model itself: its
 structure, unit system, conventions, and rules. This document maps the ASHRAE *Handbook of
 Fundamentals* (HOF) design conditions onto that model, and onto the EnergyPlus design-day
 (DDY) file that is the usual way those conditions are distributed.
@@ -14,13 +14,46 @@ The ASHRAE design-conditions spreadsheet (`HOF_2025_Climate_Design_Conditions_SI
 single `Stations` sheet, 588 columns) is the primary source for the summary variable list.
 This is the section-level map. Companions:
 
-- [Gap analysis](30-ashrae-design-day-gap-analysis.md) (Part 1) -- the column-by-column cross-check of
+- [Gap analysis](30-ashrae-design-day-gap-analysis.md) (Part 1): the column-by-column cross-check of
   all 588 columns, and the YAML/JSON variable parity check.
-- [EPW mapping](10-epw-to-model-mapping.md) -- the EPW / TMY time-series format. An EPW's
+- [EPW mapping](10-epw-to-model-mapping.md): the EPW / TMY time-series format. An EPW's
   optional `DESIGN CONDITIONS` header is columns P-CL of this same table.
 
 The converters in `tools/` implement these mappings in both directions
-(`ddy_to_json.py` / `json_to_ddy.py`), and the round-trip is checked by the test suite.
+(`ddy_to_json.py` / `json_to_ddy.py`), and the test suite checks the round-trip.
+
+## Abbreviations
+
+These pages use the ASHRAE and EnergyPlus abbreviations as they appear in the source files.
+
+| Abbreviation | Meaning |
+|---|---|
+| ASHRAE HOF | ASHRAE *Handbook of Fundamentals*. "Ch. 1" (psychrometrics) and "Ch. 14" (climatic design information) are its chapters. |
+| DB | Dry-bulb temperature |
+| WB | Wet-bulb temperature |
+| DP | Dew-point temperature |
+| HR | Humidity ratio |
+| WS | Wind speed |
+| MCWB (DDY: MWB) | Mean coincident wet-bulb temperature |
+| MCDB (DDY: MDB) | Mean coincident dry-bulb temperature |
+| MCWS | Mean coincident wind speed |
+| PCWD | Prevailing coincident wind direction |
+| HDD / CDD | Heating / cooling degree days |
+| GHI | Global horizontal irradiation |
+| taub / taud | Clear-sky beam / diffuse optical depth |
+| StdP | Standard station pressure |
+| TZ | Time zone |
+| WSF | Wind shelter factor |
+| WMO | World Meteorological Organization (station identifier) |
+| WBAN | Weather-Bureau-Army-Navy (US station identifier) |
+| WIGOS | WMO Integrated Global Observing System (station identifier) |
+| IANA | Internet Assigned Numbers Authority (maintainer of the time-zone database) |
+| EPW | EnergyPlus Weather file |
+| TMY | Typical Meteorological Year |
+| DDY | EnergyPlus design-day file |
+| IDF / IDD | EnergyPlus Input Data File / Input Data Dictionary |
+| IR | Infrared |
+| Htg / Clg / Hum_n / Enth / Condns | Heating / cooling / humidification / enthalpy / conditions (in DDY design-day names) |
 
 ## Reading the percentiles as design conditions
 
@@ -44,7 +77,7 @@ Precipitation onto `Statistics.maximum` / `minimum`. The two ASHRAE degree-day b
 | Lat / Lon / Elev | `latitude` / `longitude` / `elevation` | |
 | TZ Offset | `time_zone_offset` | |
 | Period / Climate Zone / Grade | `SourceDataPeriod` / `climate_zones` / `ashrae_grade` | |
-| **StdP** | -- | *excluded -- derived from elevation (HOF Ch. 1)* |
+| **StdP** | -- | *excluded: derived from elevation (HOF Ch. 1)* |
 | **TZ Code** | `iana_time_zone_code` instead | *the IANA code is stored in place of the ASHRAE code* |
 
 ### Design conditions -> `summary_data`
@@ -92,9 +125,8 @@ Precipitation onto `Statistics.maximum` / `minimum`. The two ASHRAE degree-day b
 
 A DDY file is an EnergyPlus IDF fragment that carries the ASHRAE design conditions in two
 forms: a `Site:Location` object, and a set of `SizingPeriod:DesignDay` objects preceded by
-a block of `!` comment lines. The design conditions in a DDY and in the model are the same
-ASHRAE columns, so the DDY is best read as a third encoding of this table rather than as an
-independent source. `tools/ddy_to_json.py` reads it, `tools/json_to_ddy.py` writes it, and
+a block of `!` comment lines. A DDY carries the same ASHRAE columns as the spreadsheet and
+the EPW header. `tools/ddy_to_json.py` reads it, `tools/json_to_ddy.py` writes it, and
 both work through the same ASHRAE-column dictionary as the EPW reader
 (`tools.climate_common.build_summary_data` / `summary_data_to_ashrae_cols`).
 
@@ -111,14 +143,14 @@ object, so nothing has to be recovered by position.
 | Name (e.g. `Chicago.OHare.Intl.AP_IL_USA Design_Conditions`) | `name`, and `subdivision` / `country_code` split off the underscore-separated tail |
 | Latitude / Longitude / TimeZone / Elevation | `latitude` / `longitude` / `time_zone_offset` / `elevation` |
 | `! ... ASHRAE Climate Zone=` comment | `climate_zones[]` (`system` = `ASHRAE Ch. 14`) |
-| *(none)* | `iana_time_zone_code` -- DDY stores only the offset; inferred as `Etc/GMT+/-N` |
-| *(none)* | `anemometer_height` (10 m) / `station_height` (1.8 m) -- assumed |
+| *(none)* | `iana_time_zone_code`: DDY stores only the offset, so it is inferred as `Etc/GMT+/-N` |
+| *(none)* | `anemometer_height` (10 m) / `station_height` (1.8 m), assumed |
 
 ### Design days -> `summary_data`
 
 Each annual `SizingPeriod:DesignDay` encodes one ASHRAE design point as a maximum dry-bulb
 temperature plus a coincident humidity value; the day's name identifies which point. The
-converters recognise 18 annual days:
+converters recognize 18 annual days:
 
 | Design-day name | Day type | Max Dry-Bulb (col) | Humidity condition type | Coincident humidity value (col) |
 |---|---|---|---|---|
@@ -146,7 +178,7 @@ depends on the day: the cooling days carry the cooling MCWS/PCWD (AT/AU), the
 coldest-month `WS=>MCDB` days carry the coldest-month design wind speed itself (Y for
 99.6%, AA for 99%), and the remaining heating days carry the heating MCWS/PCWD (AC/AD).
 
-Note that the enthalpy *magnitudes* (BE/BG/BI) are optional in practice: the
+The enthalpy *magnitudes* (BE/BG/BI) are optional in practice: the
 climate.onebuilding DDYs leave the `Enthalpy at Maximum Dry-Bulb` field blank, so a DDY
 from that source yields the enthalpy MCDB but not the enthalpy itself. DDYs written by
 `json_to_ddy.py` do fill the field, which is what makes the round-trip exact.
@@ -165,15 +197,14 @@ around:
 | `DP=>MDB`, `Enth=>MDB` | `daily_dry_bulb_temperature_range` | *(blank)* |
 | the winter days | `0.0` | *(blank)* |
 
-The winter days are not an omission: a heating design day deliberately has no diurnal
-swing and no solar gain, so real DDYs give it a `0.0` range and the `ASHRAEClearSky` model
+A heating design day has no daily temperature swing and no solar gain, so real DDYs give it a `0.0` range and the `ASHRAEClearSky` model
 with `Clearness` at `0.00` and no optical depths. The summer days use `ASHRAETau2017` with
 the month's `clear_sky_beam_optical_depth` (taub) and `clear_sky_diffuse_optical_depth`
 (taud), and carry no `Clearness` field at all.
 
 Because a design day speaks only for its own month, a DDY-derived document populates the
-design months and leaves the other entries of each 12-month array empty -- for the example
-stations, only July, since both put every cooling day in the hottest month.
+design months and leaves the other entries of each 12-month array empty. For the example stations, only
+July is populated, since both put every cooling day in the hottest month.
 
 ### Statistics carried in the comment block
 
@@ -195,29 +226,29 @@ representation:
 A DDY is a design-conditions file only, so a DDY-derived document is a strict subset of an
 ASHRAE-derived one. Absent from the output:
 
-- **Extreme Maximum Wet-Bulb (BK)** -- no design-day or comment slot.
-- **Standard deviations of the extreme annual values (BQ/BR, CC/CD)** -- the comment block
+- **Extreme Maximum Wet-Bulb (BK)**: no design-day or comment slot.
+- **Standard deviations of the extreme annual values (BQ/BR, CC/CD)**: the comment block
   carries the means only.
-- **Most of what follows column CM** -- average daily temperature, degree days, monthly
+- **Most of what follows column CM**: average daily temperature, degree days, monthly
   and annual average wind speed, precipitation, and the all-sky solar columns. These live
   in the `.stat` file. The mean daily ranges (PJ-RQ) and the clear-sky optical depths
   (RR-SO) are the exception: a design day states them for its own month, so a DDY carries
   those months and nothing else.
 - **The monthly design DB/WB tables (HZ-PI).** A DDY does hold monthly design days, but
-  neither converter reads or writes them yet -- only the 18 annual days above.
+  the converters read and write only the 18 annual days above.
 - **Any time series.** A DDY has no hourly records; pair it with an EPW for those (the
   converters merge an EPW and a DDY into one document when both are present).
 
 One field is regenerated rather than carried: `json_to_ddy.py` recomputes
-`Barometric Pressure` from `elevation` via the US standard atmosphere, which is the ASHRAE
-StdP column (J) the model deliberately excludes as derivable.
+`Barometric Pressure` from `elevation` via the U.S. Standard Atmosphere. This is the
+ASHRAE StdP column (J), which the model excludes as derivable.
 
 ## ASHRAE quantities deliberately omitted
 
-The model is not a 1:1 re-encoding of the ASHRAE table. Two principles drive exclusion:
-derivable quantities are kept out of the base model where the cost of including them
-outweighs the convenience (providers can pre-compute them into an ASHRAE-flavour
-extension); and obsolete quantities whose use cases no longer exist are dropped.
+The model leaves out two kinds of ASHRAE quantity. Derivable quantities are kept out of
+the base model where the cost of including them outweighs the convenience (providers can
+pre-compute them into an ASHRAE-flavor extension). Obsolete quantities whose use cases no
+longer exist are dropped.
 
 | Excluded | Cols | Reason |
 |---|---|---|
@@ -225,7 +256,7 @@ extension); and obsolete quantities whose use cases no longer exist are dropped.
 | Clear-Sky Noon Diffuse Horizontal Irradiance (21st) | TB-TM | Derivable from `taud`. |
 | n-Year Return Period Extreme **DB** | BS-BZ | Derivable from the extreme-annual mean/std (Gumbel/empirical mixture, HOF Ch. 14). |
 | n-Year Return Period Extreme **WB** | CE-CL | Same as above. |
-| Humidity ratio (HR) -- humidification **and** dehumidification | T, W, AW, AZ, BC | Derivable from dew point + station pressure. |
+| Humidity ratio (HR), humidification **and** dehumidification | T, W, AW, AZ, BC | Derivable from dew point + station pressure. |
 | Wind Shelter Factor (WSF) | AE | Obsolete (ASHRAE 62.2-specific). |
 | Historical Trends (Station/Regional Trends, Variability, Neighbors) | UL-VP | Committee decided trends are out of scope for the base model. |
 | Standard station pressure (StdP) | J | Derived from `elevation` (HOF Ch. 1). |

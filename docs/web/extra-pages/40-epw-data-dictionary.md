@@ -10,9 +10,10 @@ title: EPW data dictionary
 >
 > Kept in-repo so the EPW <-> Climate Information converters (`tools/epw_to_json.py`,
 > `tools/json_to_epw.py`) can be validated against a stable snapshot of the format. The
-> field-by-field mapping onto the schema -- and which fields the converter carries -- is in
-> [Gap analysis](30-ashrae-design-day-gap-analysis.md) (Part 2). Numeric *missing* / *min* / *max* values below
-> are reproduced exactly as published.
+> field-by-field mapping onto the model, including which fields the converter carries, is
+> in [EPW mapping](10-epw-to-model-mapping.md); the validation record is in
+> [Gap analysis](30-ashrae-design-day-gap-analysis.md) (Part 2). Numeric *missing* / *min* /
+> *max* values below are reproduced exactly as published.
 >
 > **License:** Documentation copyright (c) 1996-2015 The Board of Trustees of the University
 > of Illinois and the Regents of the University of California, made available under the

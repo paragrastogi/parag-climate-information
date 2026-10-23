@@ -1,40 +1,42 @@
-# Climate Data Model Specification
+# Climate Information Data Model Specification
 
 ## Scope
 
-This document defines the capabilities or functionalities of a data model to exchange climate data for use in performance simulation for building design, analysis, and operation. It makes recommendations towards, and provides examples of, vocabulary, naming conventions, unit system, and data relationships. The data model described in this document is applicable irrespective of the source of data for which it is used, including:
+This document defines a data model for exchanging climate data for performance simulation in building design, analysis, and operation. It recommends, and gives examples of, vocabulary, naming conventions, a unit system, and data relationships. The data model applies whatever the source of the data, including:
 
 - measured or observed data, including both professional and amateur weather stations, and
 - modeled or simulated data, including that from reanalysis models and projected climate models (Global Climate Models).
 
-The term "data model" as used here encompasses the climate data model for building performance simulation and design. This is a special case of the general data model for building data exchange published in **ANSI/ASHRAE/IBPSA Standard 232**.
+This data model is a special case of the general data model for building data exchange published in **ANSI/ASHRAE/IBPSA Standard 232**.
 
-The scope of this consensus document does not cover post-processing and generation methods, quality control methods for the data, or changes to existing file formats.
+This consensus document does not cover methods for generating or post-processing the data, quality control methods, or changes to existing file formats.
 
 ### Applicability
 
-This data model is defined to accommodate data for building performance modeling or simulation, the design and operation of buildings, and calculations for compliance with building codes or beyond-code certifications.
+This data model accommodates data for building performance modeling and simulation, the design and operation of buildings, calculations for compliance with building codes or beyond-code certifications, and climate risk and resilience studies.
 
-Building performance simulation includes the modeling of energy, daylight and lighting, water, thermal properties, airflow, thermal and visual comfort, urban-scale effects, air quality parameters, and computational fluid dynamics. Calculations for compliance and certification include climate risk assessment, resilience studies, and building certification schemes.
+Building performance simulation includes the modeling of energy, daylight and lighting, water, thermal properties, airflow, thermal and visual comfort, urban-scale effects, air quality parameters, and computational fluid dynamics. Calculations for compliance and certification include building code compliance and building certification schemes. The model also supports climate risk assessment and resilience studies.
 
 ### Exclusions
 
-This version of the data model does not cover data on soil conditions, ground water, and underground water resources, among others. It does not cover data for structural and geothermal calculations. These could be included as 'custom fields' initially by individual data vendors and users with the possibility to be included as 'standard' fields in future versions of the data model(s).
+This version of the data model does not cover data on soil conditions, groundwater, or underground water resources, among others, and does not cover data for structural or geothermal calculations. Data vendors and users can add these as "custom fields"; later versions of the data model may make them standard fields.
+
+The model supports design days and does not carry daily (365-value) series. The committee saw no need for daily values.
 
 ## Data Model
 
-A `ClimateInformation` document is a single object with four top-level members. The data model began as a time-series weather model and now also carries a summary / design-data side, so one document can hold both a raw record and the statistical and design summaries derived from it.
+A `ClimateInformation` document is a single object with four top-level members. The data model began as a time-series weather model and now also carries a summary and design-data side, so one document can hold both a raw record and the statistical and design summaries derived from it.
 
 ### How the model is structured
 
 | Member | Purpose |
 |---|---|
-| `metadata` | Document-level provenance: schema id/version, description, timestamps, copyright/licence. |
+| `metadata` | Document-level provenance: schema id/version, description, timestamps, copyright/license. |
 | `location` | The weather station: identifiers, coordinates, elevation, time zone, climate-zone classifications. |
 | `summary_data_sets` | One or more statistical summaries of the climate (means, extremes, exceedance/design conditions, degree days, ...). |
 | `time_series_data_sets` | One or more time series (e.g. an hourly typical year). |
 
-The `metadata` data group is defined by ASHRAE Standard 232 and is intentionally not redefined in this schema. The schema only references it and constrains its `schema_name` to `CLIMATE_INFORMATION`.
+The `metadata` data group is defined by ASHRAE Standard 232. This schema references it without redefining it and constrains its `schema_name` to `CLIMATE_INFORMATION`.
 
 ```mermaid
 graph TD
@@ -45,15 +47,15 @@ graph TD
     CI --> TDS["time_series_data_sets [ ]<br/>Group(TimeSeriesDataSet)"]
 ```
 
-The two data-set families are deliberately parallel: each pairs a time base with a named set of climate variables, and each variable drills down to the actual numbers. A summary variable bottoms out in a `Statistics` block; a time-series variable bottoms out in an array of `values`. The subsections below walk down each branch and then line the two families up side by side.
+The two data-set families are parallel: each pairs a time base with a named set of climate variables, and each variable leads to the actual numbers. A summary variable ends in a `Statistics` block; a time-series variable ends in an array of `values`. The subsections below describe each branch and then compare the two families side by side.
 
 #### Summary data sets
 
 A `SummaryDataSet` carries:
 
-- `source_data_periods` -- an array of `SourceDataPeriod` (`id`, `start_time`, `end_time`, `notes`, `ashrae_grade`). Different variables can reference different periods by `id` -- e.g. solar quantities often use a shorter period of record than temperature.
-- `summary_data` -- a `ClimateSummaryData` group whose members are the individual climate variables (dry-bulb temperature, wind speed, precipitation, degree days, ...).
-- `notes` -- optional supplementary text.
+- `source_data_periods`: an array of `SourceDataPeriod` (`id`, `start_time`, `end_time`, `notes`, `ashrae_grade`). Different variables can reference different periods by `id`; for example, solar quantities often use a shorter period of record than temperature.
+- `summary_data`: a `ClimateSummaryData` group whose members are the individual climate variables (dry-bulb temperature, wind speed, precipitation, degree days, ...).
+- `notes`: optional supplementary text.
 
 Each ordinary variable in `summary_data` is a `SummaryData` group:
 
@@ -82,12 +84,12 @@ A few members of `ClimateSummaryData` do not follow the `SummaryData` shape (deg
 
 #### The Statistics block
 
-`Statistics` is a generic distribution summary for one variable over one period (the `annual` block, or one of the 12 `monthly` blocks). It is intentionally not a fixed list of named design points; a provider populates whichever members it has:
+`Statistics` is a generic distribution summary for one variable over one period (the `annual` block, or one of the 12 `monthly` blocks). A provider populates whichever members it has:
 
-- Central tendency / spread -- `mean`, `standard_deviation`.
-- Annual extremes -- `mean_minimum`, `mean_maximum`, `standard_deviation_minimum`, `standard_deviation_maximum`: the mean and standard deviation of the per-year minima and maxima over the source period.
-- Single observed extremes -- `maximum`, `minimum`: the highest / lowest single value seen in the period.
-- `percent_exceedance` -- a distribution stored as a grid + lookup pair:
+- Central tendency and spread: `mean`, `standard_deviation`.
+- Annual extremes (`mean_minimum`, `mean_maximum`, `standard_deviation_minimum`, `standard_deviation_maximum`): the mean and standard deviation of the per-year minima and maxima over the source period.
+- Single observed extremes (`maximum`, `minimum`): the highest and lowest single value seen in the period.
+- `percent_exceedance`: a distribution stored as a grid and lookup pair:
 
 ```jsonc
 "percent_exceedance": {
@@ -96,17 +98,17 @@ A few members of `ClimateSummaryData` do not follow the `SummaryData` shape (deg
 }
 ```
 
-`values[i]` is the threshold the variable exceeds `percent_time_exceeded[i]` % of the time. A low percentage names a value exceeded only rarely (a hot / high extreme); a high percentage names a value exceeded almost all the time (a cold / low extreme). Because the percentiles are stored as data rather than as schema keys, a provider can publish any set of exceedance levels without a schema change. Coincident variables (where the lookup carries the coincident value of a second variable) use a related grid/lookup form -- see Coincident variables below.
+`values[i]` is the threshold the variable exceeds `percent_time_exceeded[i]` % of the time. A low percentage names a value exceeded only rarely (a hot or high extreme); a high percentage names a value exceeded almost all the time (a cold or low extreme). Because the percentiles are stored as data rather than as schema keys, a provider can publish any set of exceedance levels without a schema change. Coincident variables (where the lookup carries the coincident value of a second variable) use a related grid and lookup form; see Coincident variables below.
 
 #### Time series data sets
 
 A `TimeSeriesDataSet` is the time-series counterpart of a `SummaryDataSet`:
 
-- `time_intervals` -- an array of `TimeInterval` (`id`, plus either a `regular_interval` in seconds or an explicit `timestamps` array; optional `starting_time`, `labels`, `notes`). Variables reference an interval by `id`.
-- `time_series` -- a `ClimateTimeSeries` group whose members are the individual climate variables.
-- `notes` -- optional supplementary text.
+- `time_intervals`: an array of `TimeInterval` (`id`, plus either a `regular_interval` in seconds or an explicit `timestamps` array; optional `starting_time`, `labels`, `notes`). Variables reference an interval by `id`.
+- `time_series`: a `ClimateTimeSeries` group whose members are the individual climate variables.
+- `notes`: optional supplementary text.
 
-Each variable in `time_series` is a `TimeSeries` group: `display_name`, `units`, a `value_type` (`INSTANTANEOUS` | `AVERAGE` | `SUM` | `CUMULATIVE`), a `value_time_intervals` reference to one `TimeInterval`, and the `values` array itself. Optional parallel arrays -- `uncertainty`, `source`, `notes` -- may each be aligned to their own interval (`uncertainty_time_intervals`, etc.).
+Each variable in `time_series` is a `TimeSeries` group: `display_name`, `units`, a `value_type` (`INSTANTANEOUS` | `AVERAGE` | `SUM` | `CUMULATIVE`), a `value_time_intervals` reference to one `TimeInterval`, and the `values` array itself. Optional parallel arrays (`uncertainty`, `source`, `notes`) may each be aligned to their own interval (`uncertainty_time_intervals`, etc.).
 
 ```mermaid
 graph TD
@@ -132,7 +134,7 @@ The two families share the same variable vocabulary where it makes sense (e.g. `
 
 ### Units: everything is SI base
 
-The model is SI base throughout: kelvin, joules, metres, seconds, radians, and pascals. Real source datasets rarely are -- they mix degC, mm, kJ/kg, Wh/m2, and degrees -- so values are converted on import. Similarly, data consumers could choose to convert the incoming data into familiar units, e.g., degF. The table below uses the ASHRAE SI spreadsheet (itself not in base units) as a concrete comparison; EPW/TMY uses a similar mix (see the implementation and application notes).
+The model is SI base throughout: kelvin, joules, meters, seconds, radians, and pascals. Most source datasets mix degC, mm, kJ/kg, Wh/m2, and degrees, so values are converted on import. Data consumers can convert the incoming data back into familiar units, such as degF. The table below uses the ASHRAE SI spreadsheet (itself not in base units) as a concrete comparison; EPW/TMY uses a similar mix (see the EPW mapping notes).
 
 | Quantity | Common source unit (e.g. ASHRAE SI sheet) | Model | Conversion |
 |---|---|---|---|
@@ -150,17 +152,17 @@ Watch the distinction between absolute temperatures (add 273.15) and temperature
 
 ### Special cases and conventions
 
-Most variables follow the `SummaryData` -> `Statistics` shape above. A handful do not, or carry an extra convention worth stating explicitly.
+Most variables follow the `SummaryData` -> `Statistics` shape above. The handful below do not, or carry an extra convention.
 
 #### Coincident variables
 
-Some design points are paired with the mean coincident value of a second variable (for example, the mean wet-bulb temperature observed when dry-bulb is at its design value). These are modelled as separate named variables using the convention `<base>_coincident_<statistic>_<other>`.
+Some design points are paired with the mean coincident value of a second variable (for example, the mean wet-bulb temperature observed when dry-bulb is at its design value). These are modeled as separate named variables using the convention `<base>_coincident_<statistic>_<other>`.
 
 Their `percent_exceedance` uses the `PercentTimeExceedanceCoincident` alternative, whose lookup carries two aligned arrays rather than one:
 
-- `grid_variables.percent_time_exceeded` -- the percentile grid, referring to the base variable;
-- `lookup_variables.values` -- the base variable at each percentile;
-- `lookup_variables.coincident_values` -- the coincident statistic of the second variable at that same percentile.
+- `grid_variables.percent_time_exceeded`: the percentile grid, referring to the base variable.
+- `lookup_variables.values`: the base variable at each percentile.
+- `lookup_variables.coincident_values`: the coincident statistic of the second variable at that same percentile.
 
 For example, `dry_bulb_temperature_coincident_mean_wet_bulb_temperature` at `percent_time_exceeded = 1.0` carries the 1 % design dry-bulb in `values` and the mean coincident wet-bulb (MCWB) in `coincident_values`:
 
@@ -179,7 +181,9 @@ For example, `dry_bulb_temperature_coincident_mean_wet_bulb_temperature` at `per
 }
 ```
 
-Units are not restated inside the block. Both `values` and `coincident_values` are quantities the model already defines in SI base -- dry-bulb / wet-bulb / dew-point in K, enthalpy in J/kg, wind speed in m/s, wind direction in radians -- so the unit of each array is fixed by the quantity its name points at (`<base>` for `values`, `<other>` for `coincident_values`). The variable's single `units` field names the coincident value it reports (matching its display name); the base `values` are in the base quantity's own defined unit. This is why the mixed-unit pairs need no extra machinery: e.g. `enthalpy_coincident_mean_dry_bulb_temperature` has `units: "K"` (the coincident MCDB), `values` in J/kg (base enthalpy), and `coincident_values` in K -- all implied, none restated.
+Units are not restated inside the block. Both `values` and `coincident_values` are quantities the model already defines in SI base (dry-bulb, wet-bulb, and dew-point temperature in K, enthalpy in J/kg, wind speed in m/s, wind direction in radians), so the unit of each array is fixed by the quantity its name points at: `<base>` for `values`, `<other>` for `coincident_values`. The variable's single `units` field names the unit of the coincident value it reports, matching its display name.
+
+Mixed-unit pairs therefore need no extra machinery. For example, `enthalpy_coincident_mean_dry_bulb_temperature` has `units: "K"` (the mean coincident dry-bulb, MCDB), `values` in J/kg (base enthalpy), and `coincident_values` in K. The variable name implies all three units, so none is restated.
 
 #### Degree days are arrays
 
@@ -187,28 +191,23 @@ Units are not restated inside the block. Both `values` and `coincident_values` a
 
 #### Convenience indices break the group pattern
 
-`coldest_month` / `hottest_month` are plain integers (1-12) inside `ClimateSummaryData`, whereas every other member is a group. They are trivially derivable from the monthly mean dry-bulb temperatures and are included only for convenience -- a pragmatic exception to the group pattern.
-
-#### Monthly arrays are ordered
-
-Wherever a variable carries 12 monthly values (a `monthly` block, a degree-day `monthly` array, an optical-depth series, ...), index 0 is January and index 11 is December.
+`coldest_month` / `hottest_month` are plain integers (1-12) inside `ClimateSummaryData`, whereas every other member is a group. They are trivially derivable from the monthly mean dry-bulb temperatures and are included only for convenience, as a pragmatic exception to the group pattern.
 
 #### Derived variables and extensibility
 
-The committee's working principle is that variables derivable from measured variables by a deterministic calculation should stay out of the base model, with guidance on how providers pre-compute them into use-case "flavours" (e.g. an ASHRAE-flavour output adding enthalpy, ranges, return periods, ...). Whether derived variables should be defined-but-optional in the base model, supported only via documented extensibility/custom groups, or split into a separate auxiliary model remains an open question (see the open questions on the About page). The current exclusion list, and the quantities carried despite being derivable, are given in the implementation and application notes.
+The committee's working principle is that variables derivable from measured variables by a deterministic calculation should stay out of the base model, with guidance on how providers pre-compute them into use-case "flavors" (for example, an ASHRAE-flavor output adding enthalpy, ranges, and return periods). Whether derived variables should be defined-but-optional in the base model, supported only via documented extensibility/custom groups, or split into a separate auxiliary model remains an open question (see the open questions on the About page). The current exclusion list, and the quantities carried despite being derivable, are given in the ASHRAE and DDY mapping notes.
 
 {{ add_data_model('ClimateInformation', base_level=3) }}
 
 ## Verification Rules
 
-TimeSeries within a DataSet shall all have TimeIntervals with the same starting and ending timestamps.
+All TimeSeries within a TimeSeriesDataSet shall have TimeIntervals with the same starting and ending timestamps.
 
 ## Publishing Rules
 
-This data model does not consider the quality of the source data. That is, whether the data included in a given dataset are "correct" or "true" for a given location and time. It merely defines the structures for exchanging data and the judgment about the quality or appropriateness of data is left to the data publishers and users. Data providers using this model are encouraged to provide sources where possible. Providers are also encouraged to document the calculation behind each statistic in the relevant `notes` fields and to reference the original source.
+This data model does not consider the quality of the source data: whether the data in a given dataset are "correct" or "true" for a given location and time. It defines the structures for exchanging data and leaves judgment about the quality or appropriateness of the data to data publishers and users. Data providers using this model are encouraged to cite sources where possible. Providers are also encouraged to document the calculation behind each statistic in the relevant `notes` fields and to reference the original source.
 
 ## Application Rules
 
-- Climate zones listed for a location apply to that location only -- not to a "nearby" site.
-- Monthly arrays are ordered January to December (index 0 = January).
-- Design days, not daily values: the committee chose not to support 365 daily values; design-day constructs are preferred.
+- Climate zones listed for a location apply to that location only, not to a "nearby" site.
+- Every 12-value monthly array (a `monthly` block, a degree-day `monthly` array, an optical-depth series) is ordered January to December: index 0 is January and index 11 is December.
