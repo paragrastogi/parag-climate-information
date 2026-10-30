@@ -408,7 +408,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "lattice", git = "https://github.com/bigladder/lattice.git?branch=integration-check" },
+    { name = "lattice", git = "https://github.com/bigladder/lattice.git?branch=main" },
     { name = "python-dotenv" },
 ]
 
@@ -508,7 +508,7 @@ wheels = [
 [[package]]
 name = "lattice"
 version = "0.0.0"
-source = { git = "https://github.com/bigladder/lattice.git?branch=integration-check#cf6a427f250efd2034a56f76bc5a7850b93b758b" }
+source = { git = "https://github.com/bigladder/lattice.git?branch=main#01be242a7d7d6a9b756b34823e0c9388d0a51e00" }
 dependencies = [
     { name = "atheneum-forge" },
     { name = "casefy" },
